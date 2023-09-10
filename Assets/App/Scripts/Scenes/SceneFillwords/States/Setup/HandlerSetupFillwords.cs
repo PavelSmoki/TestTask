@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using App.Scripts.Infrastructure.GameCore.States.SetupState;
 using App.Scripts.Infrastructure.LevelSelection;
@@ -26,11 +27,32 @@ namespace App.Scripts.Scenes.SceneFillwords.States.Setup
 
         public Task Process()
         {
-            var model = _providerFillwordLevel.LoadModel(_serviceLevelSelection.CurrentLevelIndex);
 
+            var model = TryLoadModel();
+            
             _viewGridLetters.UpdateItems(model);
             _containerGrid.SetupGrid(model, _serviceLevelSelection.CurrentLevelIndex);
             return Task.CompletedTask;
+        }
+
+        private GridFillWords TryLoadModel()
+        {
+            var currentLevelIndex = _serviceLevelSelection.CurrentLevelIndex;
+            var model = _providerFillwordLevel.LoadModel(currentLevelIndex);
+            
+            var totalIterations = 0;
+            while (model == null)
+            {
+                currentLevelIndex++;
+                totalIterations++;
+                model = _providerFillwordLevel.LoadModel(currentLevelIndex);
+
+                if (totalIterations >= 100) break;
+            }
+            
+            _serviceLevelSelection.UpdateSelectedLevel(currentLevelIndex);
+
+            return model;
         }
     }
 }
