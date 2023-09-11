@@ -22,27 +22,8 @@ namespace App.Scripts.Scenes.SceneWordSearch.Features.Level.BuilderLevelModel
 
         private List<char> BuildListChars(List<string> words)
         {
-            HashSet<char> uniqueChars = new();
-            
-            foreach (var letter in words.SelectMany(word => word))
-            {
-                uniqueChars.Add(letter);
-            }
-
-            var charCount = new Dictionary<char, int>();
-            
-            foreach (var letter in uniqueChars)
-            {
-                var maxCount = 0;
-                foreach (var word in words)
-                {
-                    var countInWord = word.Count(ch => ch == letter);
-                    maxCount = Math.Max(maxCount, countInWord);
-                }
-
-                charCount[letter] = maxCount;
-            }
-
+            var uniqueChars = FindUniqueChars(words);
+            var charCount = FindMostCommonChars(words, uniqueChars);
             var charsList = new List<char>();
 
             foreach (var kvp in charCount)
@@ -59,6 +40,31 @@ namespace App.Scripts.Scenes.SceneWordSearch.Features.Level.BuilderLevelModel
             }
             
             return charsList;
+        }
+
+        private HashSet<char> FindUniqueChars(List<string> words)
+        {
+            HashSet<char> uniqueChars = new();
+
+            foreach (var letter in words.SelectMany(word => word))
+            {
+                uniqueChars.Add(letter);
+            }
+
+            return uniqueChars;
+        }
+
+        private Dictionary<char, int> FindMostCommonChars(List<string> words, HashSet<char> uniqueChars)
+        {
+            var charCount = new Dictionary<char, int>();
+
+            foreach (var letter in uniqueChars)
+            {
+                var maxCount = words.Select(word => word.Count(ch => ch == letter)).Prepend(0).Max();
+                charCount[letter] = maxCount;
+            }
+
+            return charCount;
         }
     }
 }
