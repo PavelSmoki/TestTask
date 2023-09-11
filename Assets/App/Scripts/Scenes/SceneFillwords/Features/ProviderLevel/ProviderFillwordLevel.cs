@@ -1,4 +1,3 @@
-using System.IO;
 using App.Scripts.Scenes.SceneFillwords.Features.FillwordModels;
 using UnityEngine;
 
@@ -8,8 +7,11 @@ namespace App.Scripts.Scenes.SceneFillwords.Features.ProviderLevel
     {
         public GridFillWords LoadModel(int index)
         {
-            var allWords = File.ReadAllLines("Assets/App/Resources/Fillwords/words_list.txt");
-            var levels = File.ReadAllLines("Assets/App/Resources/Fillwords/pack_0.txt");
+            var levelTextAsset = (TextAsset)Resources.Load("Fillwords/pack_0");
+            var wordTextAsset = (TextAsset)Resources.Load("Fillwords/words_list");
+            
+            var levels = levelTextAsset.text.Split("\r\n");
+            var allWords = wordTextAsset.text.Split("\r\n");
 
             if (index > levels.Length) return null;
 
@@ -41,6 +43,7 @@ namespace App.Scripts.Scenes.SceneFillwords.Features.ProviderLevel
         private int CountLetters(string[] currentLevel)
         {
             var lettersCount = 0;
+            
             for (var i = 0; i < currentLevel.Length; i++)
             {
                 var letterIndexes = currentLevel[i + 1].Split(';');
@@ -57,19 +60,19 @@ namespace App.Scripts.Scenes.SceneFillwords.Features.ProviderLevel
 
         private bool ValidateLevel(int gridSize, string[] currentLevel, string[] allWords)
         {
-            
             for (var i = 0; i < currentLevel.Length; i++)
             {
                 var maxIndex = 0;
-                var letterIndexes = currentLevel[i + 1].Split(';');
                 var indexesCount = 0;
+                var letterIndexes = currentLevel[i + 1].Split(';');
+
                 foreach (var letterIndex in letterIndexes)
                 {
                     var intIndex = int.Parse(letterIndex);
                     if (intIndex >= maxIndex) maxIndex = intIndex;
                     indexesCount++;
                 }
-
+                
                 if (allWords[int.Parse(currentLevel[i])].Length != indexesCount || maxIndex > gridSize * gridSize)
                     return false;
 

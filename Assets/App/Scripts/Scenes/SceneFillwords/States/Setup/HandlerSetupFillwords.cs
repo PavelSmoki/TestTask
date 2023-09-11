@@ -27,7 +27,6 @@ namespace App.Scripts.Scenes.SceneFillwords.States.Setup
 
         public Task Process()
         {
-
             var model = TryLoadModel();
             
             _viewGridLetters.UpdateItems(model);
@@ -47,7 +46,7 @@ namespace App.Scripts.Scenes.SceneFillwords.States.Setup
                 totalIterations++;
                 model = _providerFillwordLevel.LoadModel(currentLevelIndex);
 
-                if (totalIterations >= 100) break;
+                if (totalIterations >= 100) throw new Exception();
             }
             
             _serviceLevelSelection.UpdateSelectedLevel(currentLevelIndex);
