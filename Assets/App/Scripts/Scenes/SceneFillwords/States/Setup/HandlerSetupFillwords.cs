@@ -48,6 +48,8 @@ namespace App.Scripts.Scenes.SceneFillwords.States.Setup
 
                 if (totalIterations >= 100) throw new Exception();
             }
+            
+            _serviceLevelSelection.UpdateSelectedLevel(currentLevelIndex);
 
             return model;
         }
